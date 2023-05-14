@@ -2,7 +2,6 @@ import { useContext, useLayoutEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
-import Button from "../components/UI/Buttons";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
@@ -10,6 +9,7 @@ function ManageExpense({route, navigation}){
     const expensesCtx = useContext(ExpensesContext)
     const editedExpenseID = route.params?.expenseId;
     const isEditing = !!editedExpenseID;
+    const selectedExpense = expensesCtx.expenses.find(expense => expense.id === editedExpenseID)
 
     useLayoutEffect(()=>{
         navigation.setOptions({
@@ -29,22 +29,22 @@ function ManageExpense({route, navigation}){
 
     }
      
-    function confirmHandler(){
+    function confirmHandler(expenseData){
         if(isEditing){
-            expensesCtx.updateExpense(editedExpenseID,{description: 'Test!!!', amount: 25.00, date: new Date('2023-05-20')});
+            expensesCtx.updateExpense(editedExpenseID,expenseData);
         }else{
-            expensesCtx.addExpense({description: 'Test', amount: 20.00, date: new Date('2023-05-19')});
+            expensesCtx.addExpense(expenseData);
         }
         navigation.goBack();
     }
 
     return (
         <View style={styles.container}>
-            <ExpenseForm />
-            <View style={styles.buttons}>
-                <Button style={styles.button} mode="flat" onPress={cancelHandler} >Cancel</Button>
-                <Button style={styles.button} onPress={confirmHandler}>{isEditing ? 'Update' : 'Add'}</Button>
-            </View>         
+            <ExpenseForm    onCancel={cancelHandler} 
+                            onSubmit={confirmHandler}
+                            submitButtonLabel={isEditing ? 'Update':'Add'}
+                            defaultValues={selectedExpense}
+            />                     
             {isEditing && (
                 <View style={styles.deleteContainer}>
                     <IconButton icon="trash" color={GlobalStyles.colors.error500} size={36} onPress={deleteExpenseHandler}/>
