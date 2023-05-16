@@ -5,7 +5,7 @@ function Input({label, invalid, style, textInputConfig}){
     let inputStyles = [styles.input]
     if(textInputConfig.multiline){
         inputStyles.push(styles.inputMultiline)
-        console.log(inputStyles)
+        // console.log(inputStyles)
     }
     if(invalid){
         inputStyles.push(styles.invalidInput)
