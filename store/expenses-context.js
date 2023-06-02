@@ -1,48 +1,49 @@
 import { createContext, useReducer } from "react";
 
-const DUMMY_EXPENSES = [
-    {
-        id: 'e1',
-        description: 'A pair of shoes',
-        amount: 59.99,
-        date: new Date('2023-01-01')
-    },
-    {
-        id: 'e2',
-        description: 'A pair of Socks',
-        amount: 9.99,
-        date: new Date('2023-01-02')
-    },
-    {
-        id: 'e3',
-        description: 'A pair of Shirts',
-        amount: 159.99,
-        date: new Date('2023-01-03')
-    },
-    {
-        id: 'e4',
-        description: 'A pair of spoon',
-        amount: 5.99,
-        date: new Date('2023-01-04')
-    },
-    {
-        id: 'e5',
-        description: 'A pair of plate',
-        amount: 25.99,
-        date: new Date('2023-01-05')
-    },
-    {
-        id: 'e6',
-        description: 'A pair of plate',
-        amount: 25.99,
-        date: new Date('2023-05-12')
-    },
-]
+// const DUMMY_EXPENSES = [
+//     {
+//         id: 'e1',
+//         description: 'A pair of shoes',
+//         amount: 59.99,
+//         date: new Date('2023-01-01')
+//     },
+//     {
+//         id: 'e2',
+//         description: 'A pair of Socks',
+//         amount: 9.99,
+//         date: new Date('2023-01-02')
+//     },
+//     {
+//         id: 'e3',
+//         description: 'A pair of Shirts',
+//         amount: 159.99,
+//         date: new Date('2023-01-03')
+//     },
+//     {
+//         id: 'e4',
+//         description: 'A pair of spoon',
+//         amount: 5.99,
+//         date: new Date('2023-01-04')
+//     },
+//     {
+//         id: 'e5',
+//         description: 'A pair of plate',
+//         amount: 25.99,
+//         date: new Date('2023-01-05')
+//     },
+//     {
+//         id: 'e6',
+//         description: 'A pair of plate',
+//         amount: 25.99,
+//         date: new Date('2023-05-12')
+//     },
+// ]
 
 
 export const ExpensesContext = createContext({
     expenses: [ ],
     addExpense: ({description, amout, date}) => {},
+    setExpenses: (expense)=> {},
     deleteExpense: (id) => {},
     updateExpense: (id, {description, amout, date}) => {},
 });
@@ -50,8 +51,11 @@ export const ExpensesContext = createContext({
 function expensesReducer(state, action){
     switch(action.type){
         case 'ADD': 
-            const id = new Date().toString() + Math.random().toString();
-            return [{...action.payload, id: id},...state]
+            // const id = new Date().toString() + Math.random().toString();
+            return [action.payload ,...state]
+        case 'SET':
+            const inverted = action.payload.reverse();
+            return inverted;
         case 'UPDATE':
             const updatableExpenseIndex = state.findIndex((expense)=> expense.id === action.payload.id);
             const updatableExpense = state[updatableExpenseIndex]
@@ -70,11 +74,15 @@ function expensesReducer(state, action){
 }
 
 function ExpensesContextProvider({children}){
-    const [expensesState, dispatch]=useReducer(expensesReducer, DUMMY_EXPENSES);
+    const [expensesState, dispatch]=useReducer(expensesReducer, []);
 
     function addExpense(expenseData){
         dispatch({type: 'ADD', payload: expenseData})
 
+    }
+
+    function setExpenses(expenses){
+        dispatch({type: 'SET', payload: expenses});
     }
 
     function deleteExpense(id){
@@ -88,6 +96,7 @@ function ExpensesContextProvider({children}){
     const value={
         expenses: expensesState,
         addExpense: addExpense,
+        setExpenses: setExpenses,
         deleteExpense: deleteExpense,
         updateExpense: updateExpense,
     }
